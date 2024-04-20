@@ -152,36 +152,36 @@ class MALProfile:
         max_retries = 3  # Define the maximum number of retries for API requests
         retries = 0
 
-        while True:
-            try:
-                response = session.get(list_api.format(name=self.__class_dict.get("Profile Name"),
-                                                       json_offset=json_offset))
-                response.raise_for_status()  # Raise an exception for non-200 status codes
-
-                json_data = response.json()
-                if not json_data:
-                    break
-                else:
-                    for item in json_data:
-                        extracted_data = {ke_y: item[ke_y] for ke_y in important_tags if ke_y in item}
-                        with open(file_path, "a") as json_file:
+        with open(file_path, "w", encoding="utf-8") as json_file:
+            while True:
+                try:
+                    response = session.get(list_api.format(name=self.__class_dict.get("Profile Name"),
+                                                           json_offset=json_offset))
+                    response.raise_for_status()  # Raise an exception for non-200 status codes
+                    json_data = response.json()
+                    if not json_data:
+                        break
+                    else:
+                        for item in json_data:
+                            extracted_data = {ke_y: item[ke_y] for ke_y in important_tags if ke_y in item}
+                            # with open(file_path, "a") as json_file:
                             json.dump(extracted_data, json_file)
                             json_file.write("\n")
-            except requests.exceptions.RequestException as e:
-                # Handle request exceptions (e.g., connection errors, timeouts)
-                print(f"Error encountered while fetching data: {e}")
-                if retries < max_retries:
-                    retries += 1
-                    print(f"Retrying request (attempt {retries}/{max_retries})...")
-                    continue  # Retry the request
-                else:
-                    print(f"Maximum retries reached. Stopping scraping.")
-                    break  # Exit the loop after max retries
-            finally:
-                # Optional: Close session resources after successful completion or exception
-                session.close()
+                except requests.exceptions.RequestException as e:
+                    # Handle request exceptions (e.g., connection errors, timeouts)
+                    print(f"Error encountered while fetching data: {e}")
+                    if retries < max_retries:
+                        retries += 1
+                        print(f"Retrying request (attempt {retries}/{max_retries})...")
+                        continue  # Retry the request
+                    else:
+                        print(f"Maximum retries reached. Stopping scraping.")
+                        break  # Exit the loop after max retries
+                finally:
+                    # Optional: Close session resources after successful completion or exception
+                    session.close()
 
-            json_offset += 300
+                json_offset += 300
 
     def scraper(self):
         """ Scrapes profile information from a MyAnimeList.net user profile URL.
