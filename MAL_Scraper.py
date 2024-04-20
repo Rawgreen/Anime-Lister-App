@@ -5,10 +5,6 @@ import re
 from bs4 import BeautifulSoup
 
 
-# TODO: Write a function that adds scraped things into class dictionary with a given key name and value
-# TODO: Write a function that adds more message to dictionary like message1=.., message2=.., etc.
-
-
 class MALProfile:
     def __init__(self, profile_url: str):
         # Store important variables for later usage.
@@ -116,25 +112,30 @@ class MALProfile:
             exit(self.__class_dict.get("Message"))
 
     def scrape_anime_list(self):
-        """Helper function to scrape and save the user's anime list data.
+        """Scrapes and saves the user's anime list data using the MyAnimeList API.
 
-        This function iterates through pages of the user's anime list using API calls.
-        For each
-        retrieved page,
-        it extracts data for each anime entry using a predefined list of important tags.
+        This function utilizes the MyAnimeList API to retrieve the user's anime list
+        data in a single request with pagination handled through an offset value.
+        It iterates through the entries in the retrieved data and extracts information
+        for each anime entry using a predefined list of important tags.
         The extracted data is then saved to a JSON file.
 
         **Attributes:**
 
-            Important_tags (list):
-            A list of strings representing the keys to extract from each anime entry.
-            Export_folder (str): The name of the folder where the JSON file will be saved.
-            Defaults to "list data".
-            File_path (str): The path to the JSON file where the scraped data is saved.
-            Session (requests.Session): A session object used for making API requests.
-            List_api (str): The base URL for the API endpoint that provides the anime list data.
-            Json_offset (int): An offset value used for pagination while retrieving data.
-        """
+            important_tags (list):
+                A list of strings representing the keys to extract from each anime entry.
+            export_folder (str):
+                The name of the folder where the JSON file will be saved.
+                Defaults to "Anime List Data".
+            file_path (str):
+                The path to the JSON file where the scraped data is saved.
+            session (requests.Session):
+                A session object used for making API requests.
+            list_api (str):
+                The base URL for the API endpoint that provides the anime list data.
+            json_offset (int):
+                An offset value used for pagination within the API call.
+    """
 
         important_tags = ["status", "score", "num_watched_episodes",
                           "anime_title", "anime_title_eng", "anime_airing_status",
@@ -151,6 +152,7 @@ class MALProfile:
 
         max_retries = 3  # Define the maximum number of retries for API requests
         retries = 0
+        data = []
 
         with open(file_path, "w", encoding="utf-8") as json_file:
             while True:
@@ -163,10 +165,9 @@ class MALProfile:
                         break
                     else:
                         for item in json_data:
-                            extracted_data = {ke_y: item[ke_y] for ke_y in important_tags if ke_y in item}
-                            # with open(file_path, "a") as json_file:
-                            json.dump(extracted_data, json_file)
-                            json_file.write("\n")
+                            extracted_data = {key: item[key] for key in important_tags if key in item}
+                            data.append(extracted_data)
+
                 except requests.exceptions.RequestException as e:
                     # Handle request exceptions (e.g., connection errors, timeouts)
                     print(f"Error encountered while fetching data: {e}")
@@ -182,6 +183,8 @@ class MALProfile:
                     session.close()
 
                 json_offset += 300
+            if data:
+                json.dump(data, json_file, indent=4)
 
     def scraper(self):
         """ Scrapes profile information from a MyAnimeList.net user profile URL.
@@ -212,6 +215,7 @@ class MALProfile:
 
 
 if __name__ == "__main__":
+    # Randomly sampled profiles
     link = "https://myanimelist.net/profile/Rawwhite"
     # link = "https://myanimelist.net/profile/deatacitta"
     # link = "https://myanimelist.net/profile/Paulternative"
