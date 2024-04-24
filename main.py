@@ -2,8 +2,8 @@ import MAL_Scraper as scraper
 
 
 def main():
-    link = "https://myanimelist.net/profile/Rawwhite"
-    # link = "https://myanimelist.net/profile/deatacitta"
+    # link = "https://myanimelist.net/profile/Rawwhite"
+    link = "https://myanimelist.net/profile/deatacitta"
     # link = "https://myanimelist.net/profile/Paulternative"
     test = scraper.MALProfile(link)
     test.scraper()

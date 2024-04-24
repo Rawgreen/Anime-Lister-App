@@ -14,36 +14,41 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
 
 
 class App(customtkinter.CTk):
-    def __init__(self):
+    def __init__(self, profile_name: str = "Rawwhite"):
         super().__init__()
+        self.profile_name = profile_name
+        self.__unpack_json()
+        self.scrollable_frame = ScrollableFrame(self, width=560, height=660)
+        self.scrollable_frame.grid(row=0, column=0, padx=30, pady=25)
+
+    def __unpack_json(self):
+        alist_path = "Anime List Data/{name}.json"
+        # open given profile name's anime list
+        with open(alist_path.format(name=self.profile_name), "r", encoding="utf-8") as file:
+            alist = json.load(file)
+        # loop through an anime list
+        for item in alist:
+            # Unpacking json objects into variables
+            if isinstance(item, dict):
+                (
+                    self.status,  # 1-currently watching, 2-completed, 3-on hold, 4-dropped, 5-NULL, 6-Plan to watch
+                    self.score,  # given score by the list owner
+                    self.num_watched_episodes,
+                    self.anime_title,
+                    self.anime_title_eng,
+                    self.anime_airing_status,  # 2-completed series, 1-currently airing
+                    self.anime_id,
+                    self.anime_score_val,  # average score given by MAL users
+                    self.anime_popularity,  # popularity ranking in anime database
+                    self.genres,
+                    self.anime_image_path,  # image url
+                    self.anime_start_date,
+                    self.anime_end_date,
+                ) = item.values()
 
 
 def main():
-    # alist_path = "Anime List Data/{name}.json"
-    with open("Anime List Data/Rawwhite.json", "r", encoding="utf-8") as file:
-        alist = json.load(file)
-    # print(alist)
-    for item in alist:
-        # Unpacking dict into variables
-        if isinstance(item, dict):
-            (
-                status,         # 1-currently watching, 2-completed, 3-on hold, 4-dropped, 5-NaN, 6-Plan to watch
-                score,          # given score by the list owner
-                num_watched_episodes,
-                anime_title,
-                anime_title_eng,
-                anime_airing_status,    # 2-completed series, 1-currently airing
-                anime_id,
-                anime_score_val,        # average score given by MAL users
-                anime_popularity,       # popularity ranking in anime database
-                genres,
-                anime_image_path,       # image url
-                anime_start_date,
-                anime_end_date,
-            ) = item.items()
-            # print(anime_title_eng)
-
-    app = App()
+    app = App(profile_name="Rawwhite")
     app.geometry("640x720")
     app.mainloop()
 

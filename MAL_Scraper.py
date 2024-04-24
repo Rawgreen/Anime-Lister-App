@@ -70,9 +70,9 @@ class MALProfile:
             image_link = profile_picture_payload["data-src"]
             self.__class_dict.setdefault("Profile Picture Link", image_link)
             image_binary_form = requests.get(image_link)
-            download_folder = "images"
+            download_folder = "Images/Profile Images"
             os.makedirs(download_folder, exist_ok=True)
-            file_path = os.path.join(download_folder, f"{self.__class_dict['Profile Name']} Picture.jpg")
+            file_path = os.path.join(download_folder, f"{self.__class_dict['Profile Name']}.jpg")
             with open(file_path, "wb") as image:
                 image.write(image_binary_form.content)
         else:
