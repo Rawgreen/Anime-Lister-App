@@ -167,6 +167,11 @@ class MALProfile:
                         for item in json_data:
                             extracted_data = {key: item[key] for key in important_tags if key in item}
                             data.append(extracted_data)
+                            # TODO: delete after testing
+                            # print(item)
+                            image_link = item.get("anime_image_path")
+                            anime_title_jp = re.sub(r"[^\w\s]", "", item.get("anime_title"))
+                            self.scrape_anime_picture(anime_image_link=image_link, anime_title_jp=anime_title_jp)
 
                 except requests.exceptions.RequestException as e:
                     # Handle request exceptions (e.g., connection errors, timeouts)
@@ -184,7 +189,34 @@ class MALProfile:
 
                 json_offset += 300
             if data:
+                # TODO: delete after testing
+                # print(data)
                 json.dump(data, json_file, indent=4)
+
+    @staticmethod
+    def scrape_anime_picture(anime_image_link: str, anime_title_jp: str):
+        """
+        Downloads an anime image from a given URL and saves it to a local directory.
+
+        :param anime_image_link: The URL of the anime image to download.
+        :type anime_image_link: str
+        :param anime_title_jp: The Japanese title of the anime, used to name the image file.
+        :type anime_title_jp: str
+        :returns: None
+
+        This method performs the following steps:
+
+        1. Specify the download folder as "Images/Anime Images" and create the folder if it does not already exist.
+        2. Download the image from the provided URL.
+        3. Save the downloaded image in the specified folder, naming the file based on the provided anime title.
+        """
+        download_folder = "Images/Anime Images"
+        os.makedirs(download_folder, exist_ok=True)
+        image_binary_form = requests.get(anime_image_link)
+
+        file_path = os.path.join(download_folder, f"{anime_title_jp}.jpg")
+        with open(file_path, "wb") as anime_image:
+            anime_image.write(image_binary_form.content)
 
     def scraper(self):
         """ Scrapes profile information from a MyAnimeList.net user profile URL.
@@ -221,6 +253,6 @@ if __name__ == "__main__":
     # link = "https://myanimelist.net/profile/Paulternative"
     test = MALProfile(link)
     test.scraper()
-    class_variables = test.get_class_dict()
-    for key, value in class_variables.items():
-        print(f"{key}: {value}")
+    # class_variables = test.get_class_dict()
+    # for key, value in class_variables.items():
+    #     print(f"{key}: {value}")

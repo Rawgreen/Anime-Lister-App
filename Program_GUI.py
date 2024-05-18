@@ -1,5 +1,4 @@
-import os.path
-import tkinter as tk
+import re
 import customtkinter
 import json
 from PIL import Image, ImageTk
@@ -15,7 +14,7 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
     A custom scrollable frame widget for displaying items.
     """
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, profile_name: str, master, **kwargs):
         """
         Initialize the ScrollableFrame.
 
@@ -25,6 +24,7 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(1, weight=1)
         self.label_list = []
+        self.profile_name = profile_name
 
     def add_item(self, item):
         """
@@ -39,7 +39,7 @@ class ScrollableFrame(customtkinter.CTkScrollableFrame):
         right_detail_frame.grid(row=len(self.label_list), column=1, sticky="nse", padx=10, pady=10)
 
         # Load image
-        image = Image.open("Images/Profile Images/Rawwhite.jpg")
+        image = Image.open(f"Images/Anime Images/{re.sub(r'[^\w\s]', '', item)}.jpg")
         photo = ImageTk.PhotoImage(image)
 
         # Create image label in the left frame
@@ -60,7 +60,7 @@ class App(customtkinter.CTk):
     :param profile_name: The name of the anime list profile to load. Defaults to "Rawwhite".
     """
 
-    def __init__(self, profile_name: str = "Rawwhite"):
+    def __init__(self, profile_name: str):
         """
         Initialize the App.
 
@@ -71,7 +71,7 @@ class App(customtkinter.CTk):
         self.title("Anime Lister Project TEST")
         self.profile_name = profile_name
         self.json_items_list = self.__unpack_json()
-        self.scrollable_frame = ScrollableFrame(master=self, width=560, height=660)
+        self.scrollable_frame = ScrollableFrame(master=self, width=560, height=660, profile_name=profile_name)
         for i in range(len(self.json_items_list)):
             self.scrollable_frame.add_item(self.json_items_list[i][3][1])
         self.scrollable_frame.grid(row=0, column=0, padx=30, pady=25)
@@ -93,11 +93,11 @@ class App(customtkinter.CTk):
         return items_list
 
 
-def start_gui():
-    app = App(profile_name="Rawwhite")
+def start_gui(profile_name: str):
+    app = App(profile_name=profile_name)
     customtkinter.set_appearance_mode("dark")
     app.mainloop()
 
 
 if __name__ == "__main__":
-    start_gui()
+    start_gui(profile_name="Rawwhite")
