@@ -73,6 +73,7 @@ class App(customtkinter.CTk):
         self.json_items_list = self.__unpack_json()
         self.scrollable_frame = ScrollableFrame(master=self, width=560, height=660, profile_name=profile_name)
         for i in range(len(self.json_items_list)):
+            # key, value pair of anime_title attribute of iwoth list item.
             self.scrollable_frame.add_item(self.json_items_list[i][3][1])
         self.scrollable_frame.grid(row=0, column=0, padx=30, pady=25)
 
